@@ -1,25 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
 using System.IO;
 
 namespace Inst8085
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private List<Instruction> InstructionsList { get; set; }
@@ -48,7 +37,7 @@ namespace Inst8085
             listBox.ItemsSource = displayList;
             getTimingDiagram.Background = Brushes.White;
             getTimingDiagram.Foreground = Brushes.Black;
-            getTimingDiagram.BorderThickness = new Thickness(2,2,2,2);
+            getTimingDiagram.BorderThickness = new Thickness(2, 2, 2, 2);
             getTimingDiagram.BorderBrush = Brushes.Black;
         }
 
@@ -72,7 +61,7 @@ namespace Inst8085
             ac.Content = instr.flgs.AC;
             hexCode.Content = instr.hexCode;
             grp.Content = instr.Group;
-            if (!(this.listBox.SelectedIndex == -1) && drawingSheet.Children.Count == 0) 
+            if (!(this.listBox.SelectedIndex == -1) && drawingSheet.Children.Count == 0)
             {
                 DrawDiagram(ref drawingSheet, InstructionsList[listBox.SelectedIndex]);
             }
@@ -97,8 +86,9 @@ namespace Inst8085
 
         private void DeawCLK(Instruction v, ref Canvas drawingSheet)
         {
-            double x = 60;
+            double x = 80;
             double y = 10;
+            drawingSheet.Children.Add(getLabel(y, "CLK"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -107,13 +97,13 @@ namespace Inst8085
             else
                 c = int.Parse(v.TstatesCount);
             double shift = (drawingSheet.ActualWidth - 60) / c;
-            for (int i = 0; i < c * 2; i++) 
+            for (int i = 0; i < c * 2; i++)
             {
                 var line1 = new Line();
                 line1.Stroke = Brushes.LightSteelBlue;
                 line1.X1 = x;
                 line1.Y1 = y;
-                line1.X2 = (x += shift/12);
+                line1.X2 = (x += shift / 12);
                 if (i % 2 == 0)
                     line1.Y2 = (y += 40);
                 else
@@ -122,16 +112,26 @@ namespace Inst8085
                 line2.Stroke = Brushes.LightSteelBlue;
                 line2.X1 = x;
                 line2.Y1 = y;
-                line2.X2 = (x += 5*shift/12);
+                line2.X2 = (x += 5 * shift / 12);
                 line2.Y2 = y;
                 drawingSheet.Children.Add(line1);
                 drawingSheet.Children.Add(line2);
             }
         }
 
+        private Label getLabel(double y, string content)
+        {
+            Label l = new Label();
+            l.Content = content;
+            l.FontSize = 15;
+            l.Foreground = Brushes.Blue;
+            l.Margin = new Thickness(5, y + 5, drawingSheet.ActualWidth - 60, 0);
+            return l;
+        }
+
         private void DrawLines(Instruction v, ref Canvas drawingSheet)
         {
-            double i = 60;
+            double i = 80;
             double j = 10;
             bool flag;
             int c = 0;
@@ -164,10 +164,10 @@ namespace Inst8085
                 drawingSheet.Children.Add(line);
                 if (a < c)
                     drawingSheet.Children.Add(label);
-                i += (drawingSheet.ActualWidth - 60) / c; 
+                i += (drawingSheet.ActualWidth - 60) / c;
             }
-            
-            
+
+
         }
 
         private void DrawMCycle(int i, Instruction v, ref Canvas drawingSheet)
@@ -182,8 +182,9 @@ namespace Inst8085
 
         private void DrawWR(int i, Instruction v, ref Canvas drawingSheet)
         {
-            double x = 60;
+            double x = 80;
             double y = 310;
+            drawingSheet.Children.Add(getLabel(y, "WR"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -255,8 +256,9 @@ namespace Inst8085
 
         private void DrawIOM(int i, Instruction v, ref Canvas drawingSheet)
         {
-            double x = 60;
+            double x = 80;
             double y = 210;
+            drawingSheet.Children.Add(getLabel(y, "IO/M"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -282,7 +284,7 @@ namespace Inst8085
             l1.Stroke = Brushes.LightSteelBlue;
             l2.Stroke = l1.Stroke;
             l3.Stroke = l1.Stroke;
-            if(cycles[i] == "I" || cycles[i] == "O")
+            if (cycles[i] == "I" || cycles[i] == "O")
             {
                 l1.X1 = x;
                 l1.Y1 = y + 40;
@@ -313,8 +315,9 @@ namespace Inst8085
 
         private void DrawRD(int i, Instruction v, ref Canvas drawingSheet)
         {
-            double x = 60;
+            double x = 80;
             double y = 260;
+            drawingSheet.Children.Add(getLabel(y, "RD"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -334,7 +337,7 @@ namespace Inst8085
                 else if (cycles[j] == "F") x += 4 * shift;
                 else x += 3 * shift;
             }
-            if(cycles[i] == "F" || cycles[i] == "R" || cycles[i] == "I" || cycles[i] == "S")
+            if (cycles[i] == "F" || cycles[i] == "R" || cycles[i] == "I" || cycles[i] == "S")
             {
                 var l1 = new Line();
                 var l2 = new Line();
@@ -394,8 +397,9 @@ namespace Inst8085
             l2.Stroke = l1.Stroke;
             l3.Stroke = l1.Stroke;
             l4.Stroke = l1.Stroke;
-            double x = 60;
+            double x = 80;
             double y = 160;
+            drawingSheet.Children.Add(getLabel(y, "ALE"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -439,9 +443,10 @@ namespace Inst8085
 
         private void DrawADLines(int i, Instruction v, ref Canvas drawingSheet)
         {
-            double x = 60;
+            double x = 80;
             double y = 110;
-            double x_i = 60;
+            double x_i = 80;
+            drawingSheet.Children.Add(getLabel(y, "AD0-AD7"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -450,7 +455,7 @@ namespace Inst8085
             else
                 c = int.Parse(v.TstatesCount);
             double shift = (drawingSheet.ActualWidth - 60) / c;
-            double length; 
+            double length;
             var cycles = v.Mcycles.Split(' ');
             if (cycles[i] == "S") length = 6;
             else if (cycles[i] == "F") length = 4;
@@ -508,7 +513,7 @@ namespace Inst8085
                 straight.X2 = x + shift + (shift / 3) + shift / 12;
                 straight.Y2 = straight.Y1;
                 //Adding to canvas
-                if (k == 0 && i == 0) 
+                if (k == 0 && i == 0)
                 {
                     drawingSheet.Children.Add(xl1);
                     drawingSheet.Children.Add(xl2);
@@ -527,7 +532,7 @@ namespace Inst8085
                     l2.Y1 = y + 20;
                     l2.X2 = l1.X2;
                     l2.Y2 = y + 40;
-                    if (k != 0) 
+                    if (k != 0)
                         straight.X2 = x_i + shift * length + shift / 24;
                     drawingSheet.Children.Add(l1);
                     drawingSheet.Children.Add(l2);
@@ -559,13 +564,14 @@ namespace Inst8085
             else
                 c = int.Parse(v.TstatesCount);
             double shift = (drawingSheet.ActualWidth - 60) / c;
-            double x = 60;
+            double x = 80;
             double y = 60;
+            drawingSheet.Children.Add(getLabel(y, "A8-A15"));
             double length;
             var cycles = v.Mcycles.Split(' ');
             if (cycles[i] == "S") length = 6;
             else if (cycles[i] == "F") length = 4;
-            else length = 3 ;
+            else length = 3;
             for (int j = 0; j < i; j++)
             {
                 if (cycles[j] == "S") x += 6 * shift;
