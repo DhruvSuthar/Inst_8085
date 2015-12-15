@@ -44,6 +44,8 @@ namespace Inst8085
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             drawingSheet.Children.Clear();
+            TStatesCanvas.Children.Clear();
+            MCycleCanvas.Children.Clear();
             var item = sender as ListView;
             var instr = InstructionsList[item.SelectedIndex];
             name.Content = instr.Name;
@@ -92,7 +94,7 @@ namespace Inst8085
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
-                c = int.Parse(v.TstatesCount.Split('-').First().ToString());
+                c = int.Parse(v.TstatesCount.Split('-').Last().ToString());
             }
             else
                 c = int.Parse(v.TstatesCount);
@@ -129,6 +131,17 @@ namespace Inst8085
             return l;
         }
 
+        private Line getLine(double x1, double y1, double x2, double y2, SolidColorBrush brush)
+        {
+            Line l = new Line();
+            l.X1 = x1;
+            l.Y1 = y1;
+            l.X2 = x2;
+            l.Y2 = y2;
+            l.Stroke = brush;
+            return l;
+        }
+
         private void DrawLines(Instruction v, ref Canvas drawingSheet)
         {
             double i = 80;
@@ -151,19 +164,20 @@ namespace Inst8085
             {
                 var label = new Label();
                 label.Content = "T" + (a + 1);
-                label.Margin = new Thickness(i, 0, drawingSheet.ActualWidth - i, drawingSheet.ActualHeight - 350);
+                label.Margin = new Thickness(i + (drawingSheet.ActualWidth - 60) / (c * 2), 0, TStatesCanvas.ActualWidth - i, 15);
                 var line = new Line();
                 if (flag && a == red)
-                    line.Stroke = Brushes.Red;
+                {
+                    drawingSheet.Children.Add(getLine(i, j, i, 360, Brushes.Red));
+                    TStatesCanvas.Children.Add(getLine(i,j,i,20,Brushes.Red));
+                }
                 else
-                    line.Stroke = Brushes.LightSteelBlue;
-                line.X1 = i;
-                line.Y1 = j;
-                line.X2 = i;
-                line.Y2 = 360;
-                drawingSheet.Children.Add(line);
+                {
+                    drawingSheet.Children.Add(getLine(i, j, i, 360, Brushes.LightBlue));
+                    TStatesCanvas.Children.Add(getLine(i, j, i, 20, Brushes.LightSteelBlue));
+                }
                 if (a < c)
-                    drawingSheet.Children.Add(label);
+                    TStatesCanvas.Children.Add(label);
                 i += (drawingSheet.ActualWidth - 60) / c;
             }
 
@@ -206,36 +220,12 @@ namespace Inst8085
             }
             if (cycles[i] == "W" || cycles[i] == "O")
             {
-                var l1 = new Line();
-                var l2 = new Line();
-                var l3 = new Line();
-                var l4 = new Line();
-                var l5 = new Line();
-                l1.Stroke = Brushes.LightSteelBlue;
-                l2.Stroke = l1.Stroke;
-                l3.Stroke = l1.Stroke;
-                l4.Stroke = l1.Stroke;
-                l5.Stroke = l1.Stroke;
-                l1.X1 = x;
-                l1.Y1 = y;
-                l1.X2 = x + shift + shift / 4;
-                l1.Y2 = y;
-                l2.X1 = l1.X2;
-                l2.Y1 = l1.Y2;
-                l2.X2 = l1.X2 + shift / 12;
-                l2.Y2 = y + 40;
-                l3.X1 = l2.X2;
-                l3.Y1 = l2.Y2;
-                l3.X2 = l2.X2 + shift;
-                l3.Y2 = l3.Y1;
-                l4.X1 = l3.X2;
-                l4.Y1 = l3.Y2;
-                l4.X2 = l3.X2 + shift / 12;
-                l4.Y2 = y;
-                l5.X1 = l4.X2;
-                l5.Y1 = l4.Y2;
-                l5.X2 = x + shift * length;
-                l5.Y2 = l5.Y1;
+                var l1 = getLine(x, y, x + shift + shift / 4, y, Brushes.LightSteelBlue);
+                var l2 = getLine(l1.X2, l1.Y2, l1.X2 + shift / 12, y + 40, Brushes.LightSteelBlue);
+                var l3 = getLine(l2.X2, l2.Y2, l2.X2 + shift, l2.Y2, Brushes.LightSteelBlue);
+                var l4 = getLine(l3.X2, l3.Y2, l3.X2 + shift / 12, y, Brushes.LightSteelBlue);
+                var l5 = getLine(l4.X2, l4.Y2, x + shift * length, l4.Y2, Brushes.LightSteelBlue);
+                
                 drawingSheet.Children.Add(l1);
                 drawingSheet.Children.Add(l2);
                 drawingSheet.Children.Add(l3);
@@ -244,13 +234,7 @@ namespace Inst8085
             }
             else
             {
-                var l = new Line();
-                l.Stroke = Brushes.LightSteelBlue;
-                l.X1 = x;
-                l.Y1 = y;
-                l.X2 = x + shift * length;
-                l.Y2 = y;
-                drawingSheet.Children.Add(l);
+                drawingSheet.Children.Add(getLine(x, y, x + shift * length, y, Brushes.LightSteelBlue));
             }
         }
 
@@ -278,26 +262,14 @@ namespace Inst8085
                 else if (cycles[j] == "F") x += 4 * shift;
                 else x += 3 * shift;
             }
-            var l1 = new Line();
-            var l2 = new Line();
-            var l3 = new Line();
+            var l1 = getLine(x, y + 40, x + shift / 12, y, Brushes.LightSteelBlue);
+            var l2 = getLine(l1.X2, l1.Y2, x + length * shift - shift / 12, l1.Y2, Brushes.LightSteelBlue);
+            var l3 = getLine(l2.X2, l2.Y2, l2.X2 + shift / 12, y + 40, Brushes.LightSteelBlue);
             l1.Stroke = Brushes.LightSteelBlue;
             l2.Stroke = l1.Stroke;
             l3.Stroke = l1.Stroke;
             if (cycles[i] == "I" || cycles[i] == "O")
             {
-                l1.X1 = x;
-                l1.Y1 = y + 40;
-                l1.X2 = x + shift / 12;
-                l1.Y2 = y;
-                l2.X1 = l1.X2;
-                l2.Y1 = l1.Y2;
-                l2.X2 = x + length * shift - shift / 12;
-                l2.Y2 = l1.Y2;
-                l3.X1 = l2.X2;
-                l3.Y1 = l2.Y2;
-                l3.X2 = l2.X2 + shift / 12;
-                l3.Y2 = y + 40;
                 drawingSheet.Children.Add(l1);
                 drawingSheet.Children.Add(l2);
                 drawingSheet.Children.Add(l3);
@@ -339,36 +311,12 @@ namespace Inst8085
             }
             if (cycles[i] == "F" || cycles[i] == "R" || cycles[i] == "I" || cycles[i] == "S")
             {
-                var l1 = new Line();
-                var l2 = new Line();
-                var l3 = new Line();
-                var l4 = new Line();
-                var l5 = new Line();
-                l1.Stroke = Brushes.LightSteelBlue;
-                l2.Stroke = l1.Stroke;
-                l3.Stroke = l1.Stroke;
-                l4.Stroke = l1.Stroke;
-                l5.Stroke = l1.Stroke;
-                l1.X1 = x;
-                l1.Y1 = y;
-                l1.X2 = x + shift + shift / 4;
-                l1.Y2 = y;
-                l2.X1 = l1.X2;
-                l2.Y1 = l1.Y2;
-                l2.X2 = l1.X2 + shift / 12;
-                l2.Y2 = y + 40;
-                l3.X1 = l2.X2;
-                l3.Y1 = l2.Y2;
-                l3.X2 = l2.X2 + shift;
-                l3.Y2 = l3.Y1;
-                l4.X1 = l3.X2;
-                l4.Y1 = l3.Y2;
-                l4.X2 = l3.X2 + shift / 12;
-                l4.Y2 = y;
-                l5.X1 = l4.X2;
-                l5.Y1 = l4.Y2;
-                l5.X2 = x + shift * length;
-                l5.Y2 = l5.Y1;
+                var l1 = getLine(x, y, x + shift + shift / 4, y, Brushes.LightSteelBlue);
+                var l2 = getLine(l1.X2, l1.Y2, l1.X2 + shift / 12, y + 40, Brushes.LightSteelBlue);
+                var l3 = getLine(l2.X2, l2.Y2, l2.X2 + shift, l2.Y2, Brushes.LightSteelBlue);
+                var l4 = getLine(l3.X2, l3.Y2, l3.X2 + shift / 12, y, Brushes.LightSteelBlue);
+                var l5 = getLine(l4.X2, l4.Y2, x + shift * length, l4.Y2, Brushes.LightSteelBlue);
+
                 drawingSheet.Children.Add(l1);
                 drawingSheet.Children.Add(l2);
                 drawingSheet.Children.Add(l3);
@@ -377,26 +325,12 @@ namespace Inst8085
             }
             else
             {
-                var l = new Line();
-                l.Stroke = Brushes.LightSteelBlue;
-                l.X1 = x;
-                l.Y1 = y;
-                l.X2 = x + shift * length;
-                l.Y2 = y;
-                drawingSheet.Children.Add(l);
+                drawingSheet.Children.Add(getLine(x, y, x + shift * length, y, Brushes.LightSteelBlue));
             }
         }
 
         private void DrawALE(int i, Instruction v, ref Canvas drawingSheet)
         {
-            var l1 = new Line();
-            var l2 = new Line();
-            var l3 = new Line();
-            var l4 = new Line();
-            l1.Stroke = Brushes.LightSteelBlue;
-            l2.Stroke = l1.Stroke;
-            l3.Stroke = l1.Stroke;
-            l4.Stroke = l1.Stroke;
             double x = 80;
             double y = 160;
             drawingSheet.Children.Add(getLabel(y, "ALE"));
@@ -419,22 +353,11 @@ namespace Inst8085
                 else if (cycles[j] == "F") x += 4 * shift;
                 else x += 3 * shift;
             }
-            l1.X1 = x;
-            l1.Y1 = y + 40;
-            l1.X2 = x + shift / 12;
-            l1.Y2 = y;
-            l2.X1 = l1.X2;
-            l2.Y1 = l1.Y2;
-            l2.X2 = x + shift / 2;
-            l2.Y2 = y;
-            l3.X1 = l2.X2;
-            l3.Y1 = l2.Y2;
-            l3.X2 = l2.X2 + shift / 12;
-            l3.Y2 = y + 40;
-            l4.X1 = l3.X2;
-            l4.Y1 = l3.Y2;
-            l4.X2 = x + length * shift;
-            l4.Y2 = l4.Y1;
+            var l1 = getLine(x, y + 40, x + shift / 12, y, Brushes.LightSteelBlue);
+            var l2 = getLine(l1.X2, l1.Y2, x + shift / 2, y, Brushes.LightSteelBlue);
+            var l3 = getLine(l2.X2, l2.Y2, l2.X2 + shift / 12, y + 40, Brushes.LightSteelBlue);
+            var l4 = getLine(l3.X2, l3.Y2, x + length * shift, l3.Y2, Brushes.LightSteelBlue);
+
             drawingSheet.Children.Add(l1);
             drawingSheet.Children.Add(l2);
             drawingSheet.Children.Add(l3);
@@ -468,51 +391,13 @@ namespace Inst8085
             }
             for (int k = 0; k < 2; k++)
             {
-                //Declaration and stroke
-                var xl1 = new Line();
-                var xl2 = new Line();
-                var xline1 = new Line();
-                var xline2 = new Line();
-                var x1 = new Line();
-                var x2 = new Line();
-                var straight = new Line();
-                xl1.Stroke = Brushes.LightSteelBlue;
-                xl2.Stroke = xl1.Stroke;
-                xline1.Stroke = xl1.Stroke;
-                xline2.Stroke = xl1.Stroke;
-                x1.Stroke = xl1.Stroke;
-                x2.Stroke = xl1.Stroke;
-                straight.Stroke = xl1.Stroke;
-                //Vector part
-                xl1.X1 = x;
-                xl1.Y1 = y;
-                xl1.X2 = x + shift / 12;
-                xl1.Y2 = y + 40;
-                xline1.X1 = xl1.X2;
-                xline1.Y1 = xl1.Y2;
-                xline1.X2 = x + shift;
-                xline1.Y2 = xl1.Y2;
-                xl2.X1 = x;
-                xl2.Y1 = xl1.Y2;
-                xl2.X2 = x + shift / 12;
-                xl2.Y2 = y;
-                xline2.X1 = xl2.X2;
-                xline2.Y1 = xl2.Y2;
-                xline2.X2 = x + shift;
-                xline2.Y2 = xl2.Y2;
-                x1.X1 = xline1.X2;
-                x1.Y1 = xline1.Y2;
-                x1.X2 = xline1.X2 + shift / 24;
-                x1.Y2 = y + 20;
-                x2.X1 = xline2.X2;
-                x2.Y1 = xline2.Y2;
-                x2.X2 = xline2.X2 + shift / 24;
-                x2.Y2 = y + 20;
-                straight.X1 = x2.X2;
-                straight.Y1 = y + 20;
-                straight.X2 = x + shift + (shift / 3) + shift / 12;
-                straight.Y2 = straight.Y1;
-                //Adding to canvas
+                var xl1 = getLine(x, y, x + shift / 12, y + 40, Brushes.LightSteelBlue);
+                var xl2 = getLine(x, xl1.Y2, x + shift / 12, y, Brushes.LightSteelBlue);
+                var xline1 = getLine(xl1.X2, xl1.Y2, x + shift, xl1.Y2, Brushes.LightSteelBlue);
+                var xline2 = getLine(xl2.X2, xl2.Y2, x + shift, xl2.Y2, Brushes.LightSteelBlue);
+                var x1 = getLine(xline1.X2, xline1.Y2, xline1.X2 + shift / 24, y + 20, Brushes.LightSteelBlue);
+                var x2 = getLine(xline2.X2, xline2.Y2, xline2.X2 + shift / 24, y + 20, Brushes.LightSteelBlue);
+                var straight = getLine(x2.X2, y + 20, x + shift + (shift / 3) + shift / 12, y + 20, Brushes.LightSteelBlue);
                 if (k == 0 && i == 0)
                 {
                     drawingSheet.Children.Add(xl1);
@@ -520,18 +405,8 @@ namespace Inst8085
                 }
                 else
                 {
-                    var l1 = new Line();
-                    var l2 = new Line();
-                    l1.Stroke = xl1.Stroke;
-                    l2.Stroke = xl1.Stroke;
-                    l1.X1 = x + shift / 24;
-                    l1.Y1 = y + 20;
-                    l1.X2 = x + shift / 12;
-                    l1.Y2 = y;
-                    l2.X1 = l1.X1;
-                    l2.Y1 = y + 20;
-                    l2.X2 = l1.X2;
-                    l2.Y2 = y + 40;
+                    var l1 = getLine(x + shift / 24, y + 20, x + shift / 12, y, Brushes.LightSteelBlue);
+                    var l2 = getLine(l1.X1, y + 20, l1.X2, y + 40, Brushes.LightSteelBlue);
                     if (k != 0)
                         straight.X2 = x_i + shift * length + shift / 24;
                     drawingSheet.Children.Add(l1);
@@ -548,14 +423,6 @@ namespace Inst8085
 
         private void DrawAddress(int i, Instruction v, ref Canvas drawingSheet)
         {
-            var line1 = new Line();
-            var l1 = new Line();
-            var line2 = new Line();
-            var l2 = new Line();
-            line1.Stroke = Brushes.LightSteelBlue;
-            l1.Stroke = line1.Stroke;
-            line2.Stroke = l1.Stroke;
-            l2.Stroke = l1.Stroke;
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -578,22 +445,11 @@ namespace Inst8085
                 else if (cycles[j] == "F") x += 4 * shift;
                 else x += 3 * shift;
             }
-            line1.X1 = x;
-            line1.Y1 = y;
-            line1.X2 = x + shift / 12;
-            line1.Y2 = y + 40;
-            l1.X1 = line1.X2;
-            l1.Y1 = line1.Y2;
-            l1.X2 = x + length * shift;
-            l1.Y2 = l1.Y1;
-            line2.X1 = x;
-            line2.Y1 = line1.Y2;
-            line2.X2 = x + shift / 12;
-            line2.Y2 = y;
-            l2.X1 = line2.X2;
-            l2.Y1 = line2.Y2;
-            l2.X2 = x + length * shift;
-            l2.Y2 = l2.Y1;
+            var line1 = getLine(x, y, x + shift / 12, y + 40, Brushes.LightSteelBlue);
+            var l1 = getLine(line1.X2, line1.Y2, x + length * shift, line1.Y2, Brushes.LightSteelBlue);
+            var line2 = getLine(x, line1.Y2, x + shift / 12, y, Brushes.LightSteelBlue);
+            var l2 = getLine(line2.X2, line2.Y2, x + length * shift, line2.Y2, Brushes.LightSteelBlue);
+            
             drawingSheet.Children.Add(line1);
             drawingSheet.Children.Add(line2);
             drawingSheet.Children.Add(l1);

@@ -27,6 +27,8 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center">
@@ -39,7 +41,7 @@
                 <Label Content="Group : " HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="DarkCyan"/>
                 <Label x:Name="grp" Content="" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.RowSpan="2" HorizontalAlignment="Center">
                 <StackPanel Orientation="Vertical">
                     <Label Content="OP-Code" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="DarkOrange"/>
                     <Label x:Name="opCode" Content="" HorizontalAlignment="Center" VerticalAlignment="Top"/>
@@ -90,8 +92,10 @@
                     <Label x:Name="p" Content="" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 </StackPanel>
             </StackPanel>
-            <Button x:Name="getTimingDiagram" Grid.Row="3" Content="Timing Daagram" HorizontalAlignment="Center" VerticalAlignment="Top" Width="864"/>
-            <Canvas x:Name="drawingSheet" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Top" Width="950" Height="500"/>
+            <Button x:Name="getTimingDiagram" Grid.Row="4" Content="Timing Daagram" HorizontalAlignment="Center" VerticalAlignment="Top" Width="864"/>
+            <Canvas x:Name="MCycleCanvas" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="950" MinHeight="10" Height="auto"/>
+            <Canvas x:Name="TStatesCanvas" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="950" MinHeight="10" Height="auto"/>
+            <Canvas x:Name="drawingSheet" Grid.Row="7" HorizontalAlignment="Center" VerticalAlignment="Top" Width="950" Height="500"/>
         </Grid>
     </Grid>
 </Window>
