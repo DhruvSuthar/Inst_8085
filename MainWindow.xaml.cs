@@ -71,7 +71,7 @@ namespace Inst8085
 
         private void DrawDiagram(ref Canvas drawingSheet, Instruction v)
         {
-            DrawLines(v, ref drawingSheet);
+            DrawLines(v);
             DeawCLK(v, ref drawingSheet);
             int c = 0;
             if (v.McyclesCount.Contains('-'))
@@ -142,13 +142,32 @@ namespace Inst8085
             return l;
         }
 
-        private void DrawLines(Instruction v, ref Canvas drawingSheet)
+        private int[] getBreaks(Instruction v)
+        {
+            List<int> x = new List<int>();
+            x.Add(0);
+            foreach (string item in v.Mcycles.Split(' '))
+            {
+                switch (item)
+                {
+                    case "S": x.Add(x.Last() + 6); break;
+                    case "F": x.Add(x.Last() + 4); break;
+                    case "R": x.Add(x.Last() + 3); break;
+                    default: x.Add(x.Last() + 3); break;
+                }
+            }
+            return x.ToArray();
+        }
+        private void DrawLines(Instruction v)
         {
             double i = 80;
-            double j = 10;
+            double j = 0;
             bool flag;
             int c = 0;
             int red = 0;
+            int mCount = 0;
+            var mCycles = v.Mcycles.Split(' ');
+            var blues = getBreaks(v);
             if (v.TstatesCount.Contains('-'))
             {
                 flag = true;
@@ -160,28 +179,44 @@ namespace Inst8085
                 flag = false;
                 c = int.Parse(v.TstatesCount);
             }
+            double shift = drawingSheet.ActualWidth - 60 / c;
             for (int a = 0; a <= c; a++)
             {
                 var label = new Label();
                 label.Content = "T" + (a + 1);
-                label.Margin = new Thickness(i + (drawingSheet.ActualWidth - 60) / (c * 2), 0, TStatesCanvas.ActualWidth - i, 15);
-                var line = new Line();
+                label.Margin = new Thickness(i + (drawingSheet.ActualWidth - 60) / (c * 2), 0, TStatesCanvas.ActualWidth - i, 20);
+                if (blues.Contains(a) && a != blues.Last()) 
+                {
+                    var l = new Label();
+                    l.Content = "M" + (mCount + 1) + " ( " + mCycles[mCount++] + " )";
+                    l.Margin = new Thickness(i, 0, TStatesCanvas.ActualWidth - i, 00);
+                    MCycleCanvas.Children.Add(l);
+                }
                 if (flag && a == red)
                 {
                     drawingSheet.Children.Add(getLine(i, j, i, 360, Brushes.Red));
-                    TStatesCanvas.Children.Add(getLine(i,j,i,20,Brushes.Red));
+                    TStatesCanvas.Children.Add(getLine(i, 0, i, 30, Brushes.Red));
+                    MCycleCanvas.Children.Add(getLine(i, 0, i, 30, Brushes.Red));
                 }
                 else
                 {
-                    drawingSheet.Children.Add(getLine(i, j, i, 360, Brushes.LightBlue));
-                    TStatesCanvas.Children.Add(getLine(i, j, i, 20, Brushes.LightSteelBlue));
+                    drawingSheet.Children.Add(getLine(i, j, i, 360, blues.Contains(a) ? Brushes.Blue : Brushes.LightBlue));
+                    TStatesCanvas.Children.Add(getLine(i, 0, i, 30, blues.Contains(a) ? Brushes.Blue : Brushes.LightSteelBlue));
+                    if (blues.Contains(a))
+                        MCycleCanvas.Children.Add(getLine(i, 0, i, 30, Brushes.Blue));
                 }
                 if (a < c)
                     TStatesCanvas.Children.Add(label);
                 i += (drawingSheet.ActualWidth - 60) / c;
             }
-
-
+            i -= (drawingSheet.ActualWidth - 60) / c;
+            MCycleCanvas.Children.Add(getLine(0, 0, i, 0, Brushes.Blue));
+            MCycleCanvas.Children.Add(getLine(80, 30, i, 30, Brushes.Blue));
+            TStatesCanvas.Children.Add(getLine(80, 30, i, 30, Brushes.Blue));
+            drawingSheet.Children.Add(getLine(0, 360, i, 360, Brushes.Blue));
+            drawingSheet.Children.Add(getLine(0, 0, 0, 360, Brushes.Blue));
+            MCycleCanvas.Children.Add(getLine(0, 0, 0, 30, Brushes.Blue));
+            TStatesCanvas.Children.Add(getLine(0, 0, 0, 30, Brushes.Blue));
         }
 
         private void DrawMCycle(int i, Instruction v, ref Canvas drawingSheet)

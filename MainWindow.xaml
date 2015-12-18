@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Inst8085"
         mc:Ignorable="d"
-        Title="8085 Instructions" Height="700" Width="1220" ResizeMode="NoResize">
+        Title="8085 Instructions" Height="700" Width="1230" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
@@ -92,9 +92,9 @@
                     <Label x:Name="p" Content="" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 </StackPanel>
             </StackPanel>
-            <Button x:Name="getTimingDiagram" Grid.Row="4" Content="Timing Daagram" HorizontalAlignment="Center" VerticalAlignment="Top" Width="864"/>
-            <Canvas x:Name="MCycleCanvas" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="950" MinHeight="10" Height="auto"/>
-            <Canvas x:Name="TStatesCanvas" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="950" MinHeight="10" Height="auto"/>
+            <Button x:Name="getTimingDiagram" Grid.Row="4" Content="Timing Daagram" HorizontalAlignment="Center" VerticalAlignment="Top" Width="864" Margin="5"/>
+            <Canvas x:Name="MCycleCanvas" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="950" MinHeight="30" Height="auto"/>
+            <Canvas x:Name="TStatesCanvas" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="950" MinHeight="30" Height="auto"/>
             <Canvas x:Name="drawingSheet" Grid.Row="7" HorizontalAlignment="Center" VerticalAlignment="Top" Width="950" Height="500"/>
         </Grid>
     </Grid>
