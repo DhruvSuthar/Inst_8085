@@ -130,6 +130,15 @@ namespace Inst8085
             l.Margin = new Thickness(5, y + 5, drawingSheet.ActualWidth - 60, 0);
             return l;
         }
+        private Label getLabel(double y, double x, string content)
+        {
+            Label l = new Label();
+            l.Content = content;
+            l.FontSize = 15;
+            l.Foreground = Brushes.Blue;
+            l.Margin = new Thickness(x, y + 5, drawingSheet.ActualWidth - 60, 0);
+            return l;
+        }
 
         private Line getLine(double x1, double y1, double x2, double y2, SolidColorBrush brush)
         {
@@ -234,6 +243,7 @@ namespace Inst8085
             double x = 80;
             double y = 310;
             drawingSheet.Children.Add(getLabel(y, "WR"));
+            drawingSheet.Children.Add(getLabel(y - 15, "_______"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -278,6 +288,7 @@ namespace Inst8085
             double x = 80;
             double y = 210;
             drawingSheet.Children.Add(getLabel(y, "IO/M"));
+            drawingSheet.Children.Add(getLabel(y - 15,26, "____"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
@@ -325,6 +336,7 @@ namespace Inst8085
             double x = 80;
             double y = 260;
             drawingSheet.Children.Add(getLabel(y, "RD"));
+            drawingSheet.Children.Add(getLabel(y - 15, "______"));
             int c = 0;
             if (v.TstatesCount.Contains('-'))
             {
